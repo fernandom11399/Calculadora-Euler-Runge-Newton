@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método de Newton-Raphson</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+</head>
+<body class="container mt-4">
+<a href="../" style="font-size: 2rem;">Regresar</a>
+    <h2 class="mb-4">Método de Newton-Raphson</h2>
+    <form id="formNewton">
+        <div class="row">
+            <div class="col-md-3">
+                <label>Función f(x):</label>
+                <input type="text" id="funcion" class="form-control" required placeholder="Ej: x^3 - 4*x - 9">
+            </div>
+            <div class="col-md-2">
+                <label>X₀ (Aproximación inicial):</label>
+                <input type="text" id="x0" class="form-control" required placeholder="Ej: 2">
+            </div>
+            <div class="col-md-2">
+                <label>Tolerancia:</label>
+                <input type="text" id="tolerancia" class="form-control" required placeholder="Ej: 0.001">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Calcular</button>
+    </form>
+
+    <h3 class="text-center mt-4">Resultados</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>n</th>
+                <th>Xn</th>
+                <th>f(Xn)</th>
+                <th>f'(Xn)</th>
+                <th>Error</th>
+            </tr>
+        </thead>
+        <tbody id="tablaResultados"></tbody>
+    </table>
+
+    <script>
+        document.getElementById("formNewton").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            // Obtener valores
+            let funcion = document.getElementById("funcion").value;
+            let x0 = parseFloat(document.getElementById("x0").value);
+            let tolerancia = parseFloat(document.getElementById("tolerancia").value);
+
+            // Verificar valores válidos
+            if (isNaN(x0) || isNaN(tolerancia)) {
+                alert("Ingrese valores numéricos válidos.");
+                return;
+            }
+
+            // Obtener la derivada automáticamente
+            let derivada = math.derivative(funcion, 'x').toString();
+            console.log("Derivada:", derivada);
+
+            let n = 0;
+            let error = 1;
+            let tabla = document.getElementById("tablaResultados");
+            tabla.innerHTML = "";
+
+            while (error > tolerancia) {
+                let fx = math.evaluate(funcion, { x: x0 });
+                let fpx = math.evaluate(derivada, { x: x0 });
+
+                if (fpx === 0) {
+                    alert("La derivada es 0. No se puede continuar.");
+                    return;
+                }
+
+                let x1 = x0 - (fx / fpx);
+                error = Math.abs(x1 - x0);
+
+                // Agregar fila a la tabla
+                let fila = `<tr>
+                    <td>${n}</td>
+                    <td>${x0.toFixed(6)}</td>
+                    <td>${fx.toFixed(6)}</td>
+                    <td>${fpx.toFixed(6)}</td>
+                    <td>${error.toExponential(2)}</td>
+                </tr>`;
+                tabla.innerHTML += fila;
+
+                // Actualizar valores
+                x0 = x1;
+                n++;
+
+                // Evitar bucle infinito
+                if (n > 100) {
+                    alert("Se superó el límite de iteraciones.");
+                    return;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
