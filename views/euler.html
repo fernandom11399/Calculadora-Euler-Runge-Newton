@@ -115,7 +115,7 @@
                 let xf = parseFloat(document.getElementById("xf").value);
                 let funcion = document.getElementById("funcion").value;
 
-                if (!validarInputs(x0, y0, h, xf)) {
+                if (!validarInputs(h, xf)) {
                     alert("Entradas no válidas. No se permiten letras ni ceros en x0, y0 o xf. Solo se permite 0 en h si es decimal.");
                     return;
                 }
